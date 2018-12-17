@@ -20,8 +20,15 @@ class WebformQuizWebformElementOptions extends WebformElementOptions {
    * Processes a webform element options element.
    */
   public static function processWebformElementOptions(&$element, FormStateInterface $form_state, &$complete_form) {
-    $element = parent::processWebformElementOptions($element, $form_state, $complete_form);
     $element['custom']['#type'] = 'webform_quiz_webform_options';
+
+    $element['webform_quiz_number_of_points'] = [
+      '#type' => 'number',
+      '#title' => t('Number of points'),
+      '#description' => t('Enter the number of points for this quiz question.'),
+      '#default_value' => '1',
+    ];
+
     return $element;
   }
 

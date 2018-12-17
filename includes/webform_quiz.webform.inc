@@ -28,12 +28,6 @@ function webform_quiz_form_webform_ui_element_form_alter(&$form, FormStateInterf
     return;
   }
 
-  $form['webform_quiz_number_of_points'] = [
-    '#type' => 'number',
-    '#title' => t('Number of points'),
-    '#default_value' => '1',
-  ];
-
   $form['#submit'][] = '\Drupal\webform_quiz\Form\WebformQuizUiElementFormBase::submitForm';
 }
 
