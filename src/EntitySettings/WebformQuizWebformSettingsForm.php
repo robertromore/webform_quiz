@@ -41,7 +41,7 @@ class WebformQuizWebformSettingsForm extends WebformEntitySettingsBaseForm {
     $form['quiz_settings']['allow_retakes'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Allow retakes?'),
-      '#default_value' => isset($third_party_settings['settings']['allow_retakes']) ? $third_party_settings['settings']['allow_retakes'] : FALSE,
+      '#default_value' => isset($third_party_settings['settings']['allow_retakes']) ? $third_party_settings['settings']['allow_retakes'] : TRUE,
     ];
     $form['quiz_settings']['retake_settings'] = [
       '#type' => 'container',
@@ -56,7 +56,8 @@ class WebformQuizWebformSettingsForm extends WebformEntitySettingsBaseForm {
     $form['quiz_settings']['retake_settings']['number_of_retakes_allowed'] = [
       '#type' => 'number',
       '#title' => $this->t('Number of retakes allowed'),
-      '#default_value' => isset($third_party_settings['settings']['number_of_retakes_allowed']) ? $third_party_settings['settings']['number_of_retakes_allowed'] : 1,
+      '#description' => $this->t('Enter the number of retakes a user can do. Enter 0 for an unlimited number of retakes.'),
+      '#default_value' => isset($third_party_settings['settings']['number_of_retakes_allowed']) ? $third_party_settings['settings']['number_of_retakes_allowed'] : 0,
     ];
     $form['quiz_settings']['passing_score'] = [
       '#type' => 'number',
