@@ -28,6 +28,11 @@ function webform_quiz_form_webform_ui_element_form_alter(&$form, FormStateInterf
     return;
   }
 
+  // todo: implement submit handler.
+  /** @var \Drupal\webform_quiz\Plugin\WebformQuizSubmitHandlerManager $plugin_manager */
+  $plugin_manager = Drupal::service('plugin.manager.webform_quiz_submit_handler');
+  $submit_handler = $plugin_manager->getDefinition('webform_quiz_element_config_submit');
+
   $form['#submit'][] = '\Drupal\webform_quiz\Form\WebformQuizUiElementFormBase::submitForm';
 }
 
