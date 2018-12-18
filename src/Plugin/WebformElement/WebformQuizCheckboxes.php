@@ -23,8 +23,8 @@ class WebformQuizCheckboxes extends WebformQuizRadios {
   public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
     // This addresses an issue where the webform_quiz_checkboxes element was not
     // appearing in the webform.
-    $element['#type'] = 'checkboxes';
     parent::prepare($element, $webform_submission);
+    $element['#type'] = 'checkboxes';
   }
 
 }
