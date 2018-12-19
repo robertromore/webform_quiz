@@ -39,6 +39,27 @@ class WebformQuizRadios extends Radios {
   /**
    * {@inheritdoc}
    */
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $form = parent::buildConfigurationForm($form, $form_state);
+
+    // Modify the existing element description to distinguish it from the
+    // correct answer description.
+    $form['element_description']['description']['#title'] = $this->t('Element Description');
+
+    // Add a WYSIWYG for the correct answer description.
+    $form['element_description']['correct_answer_description'] = [
+      '#type' => 'webform_html_editor',
+      '#title' => $this->t('Correct Answer Description'),
+      '#description' => $this->t('A description of why the correct answer is correct.'),
+      '#weight' => 0,
+    ];
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
     // This addresses an issue where the webform_quiz_radios element was not
     // appearing in the webform.
