@@ -2,8 +2,13 @@
 
 namespace Drupal\webform_quiz\Plugin\WebformQuizSubmitHandler;
 
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Form\SubformState;
 use Drupal\Core\Plugin\PluginBase;
+use Drupal\webform\Entity\Webform;
 use Drupal\webform_quiz\Plugin\WebformQuizSubmitHandlerInterface;
+use Drupal\webform_ui\Form\WebformUiElementFormBase;
+use Exception;
 
 
 /**
@@ -14,16 +19,58 @@ use Drupal\webform_quiz\Plugin\WebformQuizSubmitHandlerInterface;
  */
 class WebformQuizElementConfigSubmit extends PluginBase implements WebformQuizSubmitHandlerInterface {
 
+  /**
+   * @todo Add this function to interface.
+   *
+   * @param array $form
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Exception
+   */
+  public function handleSubmit(&$form, FormStateInterface $form_state) {
+    $parent_key = $form_state->getValue('parent_key');
+    $key = $form_state->getValue('key');
 
-    /**
-    * {@inheritdoc}
-    */
-    public function build() {
-      $build = [];
+    $form_obj = $form_state->getFormObject();
 
-      // Implement your logic
+    if ($form_obj instanceof WebformUiElementFormBase) {
+      $element_plugin = $form_obj->getWebformElementPlugin();
+      $webform = $form_obj->getWebform();
 
-      return $build;
+      // Submit element configuration.
+      // Generally, elements will not be processing any submitted properties.
+      // It is possible that a custom element might need to call a third-party API
+      // to 'register' the element.
+      $subform_state = SubformState::createForSubform($form['properties'], $form, $form_state);
+      $element_plugin->submitConfigurationForm($form, $subform_state);
+
+      // Add/update the element to the webform.
+      $properties = $element_plugin->getConfigurationFormProperties($form, $subform_state);
+
+      // Store the correct answer based on what the user checked.
+      // This will be an array.
+      $user_input = $form_state->getUserInput();
+      $items = $user_input['properties']['options']['custom']['options']['items'];
+      $correct_answers = [];
+      foreach ($items as $item) {
+        if (!empty($item['is_correct_answer'])) {
+          $correct_answers[$item['value']] = $item['value'];
+        }
+      }
+
+      if (empty($key)) {
+        // todo: create a more specific exception.
+        $message = 'The configuration cannot be saved because the webform element key cannot be empty.';
+        throw new Exception($message);
+      }
+
+      $properties['#correct_answer'] = $correct_answers;
+      $webform->setElementProperties($key, $properties, $parent_key);
+
+      // Save the webform.
+      $webform->save();
     }
-  
+  }
+
 }

@@ -5,6 +5,8 @@
  * Contains hooks for the webform module.
  */
 
+use Drupal\Component\Plugin\Exception\PluginException;
+use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform_quiz\Helper\ScoreCalculator;
 use Drupal\webform\Entity\WebformSubmission;
@@ -28,12 +30,32 @@ function webform_quiz_form_webform_ui_element_form_alter(&$form, FormStateInterf
     return;
   }
 
-  // todo: implement submit handler.
+  $form['#submit'][] = 'webform_quiz_form_webform_ui_element_form_submit';
+}
+
+function webform_quiz_form_webform_ui_element_form_submit(&$form, $form_state) {
   /** @var \Drupal\webform_quiz\Plugin\WebformQuizSubmitHandlerManager $plugin_manager */
   $plugin_manager = Drupal::service('plugin.manager.webform_quiz_submit_handler');
-  $submit_handler = $plugin_manager->getDefinition('webform_quiz_element_config_submit');
+  try {
+    /** @var \Drupal\webform_quiz\Plugin\WebformQuizSubmitHandler\WebformQuizElementConfigSubmit $submit_handler */
+    $submit_handler = $plugin_manager
+      ->createInstance('webform_quiz_element_config_submit');
 
-  $form['#submit'][] = '\Drupal\webform_quiz\Form\WebformQuizUiElementFormBase::submitForm';
+    // Save quiz data for this webform element such as the correct answer
+    // todo: or the correct answer description.
+    $submit_handler->handleSubmit($form, $form_state);
+
+  } catch (PluginException $e) {
+    Drupal
+      ::logger('webform_quiz')
+      ->error(
+        "There is an issue with the webform_quiz_element_config_submit plugin: {$e->getMessage()}"
+      );
+  } catch (EntityStorageException $e) {
+    Drupal
+      ::logger('webform_quiz')
+      ->error("Error saving webform: {$e->getMessage()}");
+  }
 }
 
 /**
