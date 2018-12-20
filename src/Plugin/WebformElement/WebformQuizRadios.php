@@ -115,8 +115,6 @@ class WebformQuizRadios extends Radios {
    * Ajax handler to help show the correct description when user clicks an
    * option.
    *
-   * @todo Pass the $element variable to the render class.
-   *
    * @param $form
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *
@@ -132,10 +130,16 @@ class WebformQuizRadios extends Radios {
     $element = $webform->getElement($element_key);
     $description = isset($element['#correct_answer_description']) ? $element['#correct_answer_description'] : '';
 
-    return [
+    $build['#type'] = 'container';
+    $build['#attributes']['id'] = 'correct-answer-description-wrapper';
+    $build['description'] = [
       '#type' => 'webform_quiz_correct_answer_description',
+      '#correct_answer' => $element['#correct_answer'],
       '#correct_answer_description' => $description,
+      '#triggering_element' => $triggering_element,
     ];
+
+    return $build;
   }
 
 }
