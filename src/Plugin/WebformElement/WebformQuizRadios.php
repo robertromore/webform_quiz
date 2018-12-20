@@ -2,6 +2,7 @@
 
 namespace Drupal\webform_quiz\Plugin\WebformElement;
 
+use Drupal;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Plugin\WebformElement\Radios;
 use Drupal\webform\WebformSubmissionInterface;
@@ -72,7 +73,11 @@ class WebformQuizRadios extends Radios {
     // This addresses an issue where the webform_quiz_radios element was not
     // appearing in the webform.
     $element['#type'] = 'radios';
-//    $element['#suffix'] = $element['#correct_answer_description'];
+    $correct_answer_description = [
+      '#type' => 'webform_quiz_correct_answer_description',
+      '#correct_answer_description' => isset($element['#correct_answer_description']) ? $element['#correct_answer_description'] : '',
+    ];
+    $element['#suffix'] = Drupal::service('renderer')->render($correct_answer_description);
     parent::prepare($element, $webform_submission);
   }
 
