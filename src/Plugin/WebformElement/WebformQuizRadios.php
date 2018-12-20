@@ -69,6 +69,22 @@ class WebformQuizRadios extends Radios {
   /**
    * {@inheritdoc}
    */
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+    parent::validateConfigurationForm($form, $form_state);
+
+    // Make sure no blank options get submitted. If they are, just remove them.
+    $values = $form_state->getValues();
+    foreach ($values['options'] as $key => $value) {
+      if (empty($value)) {
+        unset($values['options'][$value]);
+      }
+    }
+    $form_state->setValues($values);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
     // This addresses an issue where the webform_quiz_radios element was not
     // appearing in the webform.
