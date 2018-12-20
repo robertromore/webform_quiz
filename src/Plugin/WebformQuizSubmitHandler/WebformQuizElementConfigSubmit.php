@@ -59,10 +59,12 @@ class WebformQuizElementConfigSubmit extends PluginBase implements WebformQuizSu
         throw new Exception($message);
       }
 
-      $properties['#correct_answer'] = $correct_answers;
+      // Save the correct answer description.
+      $values = $form_state->getValues();
+      $correct_answer_description = $values['correct_answer_description'];
 
-      // todo: save the correct answer description.
-//      $subform_state->subform["element_description"]["correct_answer_description"]["#value"];
+      $properties['#correct_answer'] = $correct_answers;
+      $properties['#correct_answer_description'] = $correct_answer_description;
 
       $webform->setElementProperties($key, $properties, $parent_key);
 

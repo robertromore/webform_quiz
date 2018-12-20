@@ -41,6 +41,8 @@ class WebformQuizRadios extends Radios {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildConfigurationForm($form, $form_state);
+    $storage = $form_state->getStorage();
+    $element_properties = $storage['element_properties'];
 
     // Modify the existing element description to distinguish it from the
     // correct answer description.
@@ -51,6 +53,7 @@ class WebformQuizRadios extends Radios {
       '#type' => 'webform_html_editor',
       '#title' => $this->t('Correct Answer Description'),
       '#description' => $this->t('A description of why the correct answer is correct.'),
+      '#default_value' => isset($element_properties['correct_answer_description']) ? $element_properties['correct_answer_description'] : '',
       '#weight' => 0,
     ];
 
