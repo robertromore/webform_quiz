@@ -80,16 +80,17 @@ class WebformQuizRadios extends Radios {
     ];
     $element['#suffix'] = Drupal::service('renderer')->render($correct_answer_description_wrapper);
 
-    $element['#ajax'] = [
-      'callback' => 'Drupal\webform_quiz\Plugin\WebformElement\WebformQuizRadios::ajaxShowCorrectAnswerDescription',
-      'wrapper' => 'correct-answer-description-wrapper',
-      'event' => 'click',
-      'method' => 'replace',
-      'progress' => [
-        'type' => 'throbber',
-        'message' => NULL,
-      ],
-    ];
+    if (!empty($element['#correct_answer_description'])) {
+      $element['#ajax'] = [
+        'callback' => 'Drupal\webform_quiz\Plugin\WebformElement\WebformQuizRadios::ajaxShowCorrectAnswerDescription',
+        'wrapper' => 'correct-answer-description-wrapper',
+        'event' => 'change',
+        'progress' => [
+          'type' => 'throbber',
+          'message' => NULL,
+        ],
+      ];
+    }
 
     parent::prepare($element, $webform_submission);
   }
