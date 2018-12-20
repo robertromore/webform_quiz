@@ -20,13 +20,7 @@ use Exception;
 class WebformQuizElementConfigSubmit extends PluginBase implements WebformQuizSubmitHandlerInterface {
 
   /**
-   * @todo Add this function to interface.
-   *
-   * @param array $form
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *
-   * @throws \Drupal\Core\Entity\EntityStorageException
-   * @throws \Exception
+   * {@inheritdoc}
    */
   public function handleSubmit(&$form, FormStateInterface $form_state) {
     $parent_key = $form_state->getValue('parent_key');
@@ -66,6 +60,10 @@ class WebformQuizElementConfigSubmit extends PluginBase implements WebformQuizSu
       }
 
       $properties['#correct_answer'] = $correct_answers;
+
+      // todo: save the correct answer description.
+//      $subform_state->subform["element_description"]["correct_answer_description"]["#value"];
+
       $webform->setElementProperties($key, $properties, $parent_key);
 
       // Save the webform.
