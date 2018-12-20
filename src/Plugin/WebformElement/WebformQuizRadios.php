@@ -19,10 +19,15 @@ use Drupal\webform\WebformSubmissionInterface;
  */
 class WebformQuizRadios extends Radios {
 
-  function getInfo() {
-    $info = parent::getInfo();
-
-    return $info;
+  /**
+   * {@inheritdoc}
+   */
+  public function getDefaultProperties() {
+    return [
+        // Form display.
+        'correct_answer' => [],
+        'correct_answer_description' => '',
+      ] + parent::getDefaultProperties();
   }
 
   /**
@@ -67,6 +72,7 @@ class WebformQuizRadios extends Radios {
     // This addresses an issue where the webform_quiz_radios element was not
     // appearing in the webform.
     $element['#type'] = 'radios';
+//    $element['#suffix'] = $element['#correct_answer_description'];
     parent::prepare($element, $webform_submission);
   }
 
