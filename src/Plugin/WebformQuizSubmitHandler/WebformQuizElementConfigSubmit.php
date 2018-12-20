@@ -5,7 +5,6 @@ namespace Drupal\webform_quiz\Plugin\WebformQuizSubmitHandler;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Plugin\PluginBase;
-use Drupal\webform\Entity\Webform;
 use Drupal\webform_quiz\Plugin\WebformQuizSubmitHandlerInterface;
 use Drupal\webform_ui\Form\WebformUiElementFormBase;
 use Exception;
