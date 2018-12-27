@@ -6,6 +6,7 @@ use Drupal;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform_quiz\Exception\WebformQuizIdMissingException;
 
@@ -63,7 +64,7 @@ class WebformQuizAddForm extends FormBase {
     ];
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Submit'),
+      '#value' => $this->t('Next'),
     ];
 
     return $form;
@@ -87,18 +88,22 @@ class WebformQuizAddForm extends FormBase {
       $webform->set('id', $values['id']);
       $webform->set('title', $values['title']);
       try {
-        $webform->setThirdPartySetting('webform_quiz', 'settings', []);
+        $quiz_settings = [
+          'is_this_a_quiz' => '1',
+        ];
+        $webform->setThirdPartySetting('webform_quiz', 'settings', $quiz_settings);
         $webform->save();
         Drupal::messenger()->addMessage('Quiz added successfully.');
       } catch (EntityStorageException $e) {
-
+        Drupal::messenger()->addError('Could not save the quiz.');
+        Drupal::logger('webform_quiz')->error('Could not save the quiz: ' . $e->getMessage());
       }
     }
     else {
       throw new WebformQuizIdMissingException();
     }
 
-//    $form_state->setRedirect('entity.webform.edit_form');
+    $form_state->setRedirectUrl(Url::fromRoute('entity.webform.edit_form', ['webform' => $this->webform->id()]));
   }
 
 }
