@@ -9,7 +9,7 @@ entity.webform_quiz.quiz_settings:
 webform_quiz.webform_quiz_add_form:
   path: '/admin/structure/webform/webform_quiz/add'
   defaults:
-    _form: '\Drupal\webform_quiz\Form\WebformQuizAddForm'
-    _title: 'WebformQuizAddForm'
+    _entity_form: 'webform.webform_quiz_add_form'
+    _title: 'Add form'
   requirements:
     _access: 'TRUE'

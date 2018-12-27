@@ -39,6 +39,7 @@ function webform_quiz_entity_type_alter(array &$entity_types) {
 
     if ($webform_entity_type instanceof EntityTypeInterface) {
       $webform_entity_type->setFormClass('webform_quiz_settings', '\Drupal\webform_quiz\EntitySettings\WebformQuizWebformSettingsForm');
+      $webform_entity_type->setFormClass('webform_quiz_add_form', '\Drupal\webform_quiz\EntitySettings\WebformQuizAddForm');
     }
   }
 }
