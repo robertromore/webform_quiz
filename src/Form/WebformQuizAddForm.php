@@ -62,6 +62,11 @@ class WebformQuizAddForm extends FormBase {
       '#size' => 64,
       '#weight' => '0',
     ];
+    $form['description'] = [
+      '#type' => 'webform_html_editor',
+      '#title' => $this->t('Administrative description'),
+      '#default_value' => $webform->get('description'),
+    ];
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Next'),
@@ -87,6 +92,7 @@ class WebformQuizAddForm extends FormBase {
     if (isset($values['id'])) {
       $webform->set('id', $values['id']);
       $webform->set('title', $values['title']);
+      $webform->set('description', $values['description']);
       try {
         $quiz_settings = [
           'is_this_a_quiz' => '1',
