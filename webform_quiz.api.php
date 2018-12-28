@@ -1,8 +1,5 @@
 <?php
 
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Form\FormStateInterface;
-
 /**
  * Perform ajax actions for when a user clicks a quiz response.
  *
@@ -10,6 +7,6 @@ use Drupal\Core\Form\FormStateInterface;
  * @param $form
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  */
-function hook_webform_quiz_correct_answer_shown(AjaxResponse $ajax_response, $form, FormStateInterface $form_state) {
+function hook_webform_quiz_correct_answer_shown(Drupal\Core\Ajax\AjaxResponse $ajax_response, $form, Drupal\Core\Form\FormStateInterface $form_state) {
 
 }
