@@ -7,6 +7,8 @@
 
 use Drupal\Core\Routing\RouteMatchInterface;
 
+require_once __DIR__ . '/includes/webform_quiz_stats.webform_quiz.inc';
+
 /**
  * Implements hook_help().
  */
@@ -21,4 +23,15 @@ function webform_quiz_stats_help($route_name, RouteMatchInterface $route_match) 
 
     default:
   }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function webform_quiz_stats_theme($existing, $type, $theme, $path) {
+  return [
+    'webform_quiz_stats_percentage' => [
+      'variables' => ['percentage' => NULL, 'label_text' => NULL],
+    ],
+  ];
 }

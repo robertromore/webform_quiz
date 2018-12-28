@@ -143,7 +143,9 @@ class WebformQuizRadios extends Radios {
     ];
 
     $ajax_response->addCommand(new HtmlCommand('#correct-answer-description-wrapper', $build));
-    Drupal::moduleHandler()->invokeAll('webform_quiz_correct_answer_shown', [$ajax_response, $form, $form_state]);
+
+    // Allow other modules to add ajax commands.
+    Drupal::moduleHandler()->invokeAll('webform_quiz_correct_answer_shown', [$ajax_response, $element, $form_state]);
 
     return $ajax_response;
   }
