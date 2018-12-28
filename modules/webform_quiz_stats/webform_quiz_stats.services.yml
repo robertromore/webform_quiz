@@ -1,0 +1,4 @@
+services:
+  plugin.manager.webform_quiz_stats_percentage_calculator:
+    class: Drupal\webform_quiz_stats\Plugin\WebformQuizStatsPercentageCalculatorManager
+    parent: default_plugin_manager
