@@ -41,7 +41,7 @@ class WebformQuizStatsPercentageCalculator extends WebformQuizStatsPercentageCal
       }
     }
 
-    return (count($webform_submissions_with_this_option) / count($webform_submissions)) * 100;
+    return round((count($webform_submissions_with_this_option) / count($webform_submissions)) * 100);
   }
 
 }
