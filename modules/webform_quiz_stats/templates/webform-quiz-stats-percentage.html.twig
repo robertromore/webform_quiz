@@ -1,3 +1,22 @@
+{#
+/**
+ * @file
+ * Implementation to display the percentage of users that selected
+ * a particular webform radio/checkbox option.
+ *
+ * Available variables:
+ * - node: The node entity with limited access to object properties and methods.
+ */
+#}
+
+<style>
+  .webform-quiz-stats-ajax-processed .webform-quiz-stats-percentage {
+    background: #d0d0d0;
+    border-radius: 8px;
+    padding: 5px 10px 5px 10px;
+  }
+</style>
+
 <span class="webform-quiz-stats-ajax-processed">
   <label>{{ label_text }}</label>
   <span class="webform-quiz-stats-percentage">{{ percentage }}%</span>
