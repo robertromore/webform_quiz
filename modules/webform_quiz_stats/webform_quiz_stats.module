@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * @file
+ * Contains webform_quiz_stats.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+require_once __DIR__ . '/includes/webform_quiz_stats.webform_quiz.inc';
+
+/**
+ * Implements hook_help().
+ */
+function webform_quiz_stats_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the webform_quiz_stats module.
+    case 'help.page.webform_quiz_stats':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Provide percentages for users that responded to particular answers.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function webform_quiz_stats_theme($existing, $type, $theme, $path) {
+  return [
+    'webform_quiz_stats_percentage' => [
+      'variables' => ['percentage' => NULL, 'label_text' => NULL],
+    ],
+  ];
+}

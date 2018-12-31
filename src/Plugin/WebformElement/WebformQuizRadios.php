@@ -3,6 +3,8 @@
 namespace Drupal\webform_quiz\Plugin\WebformElement;
 
 use Drupal;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Plugin\WebformElement\Radios;
 use Drupal\webform\WebformSubmissionInterface;
@@ -99,7 +101,6 @@ class WebformQuizRadios extends Radios {
     if (!empty($element['#correct_answer_description'])) {
       $element['#ajax'] = [
         'callback' => 'Drupal\webform_quiz\Plugin\WebformElement\WebformQuizRadios::ajaxShowCorrectAnswerDescription',
-        'wrapper' => 'correct-answer-description-wrapper',
         'event' => 'change',
         'progress' => [
           'type' => 'throbber',
@@ -118,9 +119,11 @@ class WebformQuizRadios extends Radios {
    * @param $form
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *
-   * @return array
+   * @return \Drupal\Core\Ajax\AjaxResponse
    */
   public static function ajaxShowCorrectAnswerDescription(&$form, FormStateInterface $form_state) {
+    $ajax_response = new AjaxResponse();
+
     $triggering_element = $form_state->getTriggeringElement();
     $element_key = $triggering_element['#name'];
 
@@ -139,7 +142,12 @@ class WebformQuizRadios extends Radios {
       '#triggering_element' => $triggering_element,
     ];
 
-    return $build;
+    $ajax_response->addCommand(new HtmlCommand('#correct-answer-description-wrapper', $build));
+
+    // Allow other modules to add ajax commands.
+    Drupal::moduleHandler()->invokeAll('webform_quiz_correct_answer_shown', [$ajax_response, $element, $form_state]);
+
+    return $ajax_response;
   }
 
 }
