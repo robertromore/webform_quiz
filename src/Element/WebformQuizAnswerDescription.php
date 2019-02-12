@@ -7,9 +7,9 @@ use Drupal\Core\Render\Element\RenderElement;
 /**
  * Provides a render element to display webform descriptions.
  *
- * @RenderElement("webform_quiz_correct_answer_description")
+ * @RenderElement("webform_quiz_answer_description")
  */
-class WebformQuizCorrectAnswerDescription extends RenderElement {
+class WebformQuizAnswerDescription extends RenderElement {
 
   /**
    * {@inheritdoc}
@@ -18,12 +18,13 @@ class WebformQuizCorrectAnswerDescription extends RenderElement {
     $class = get_class($this);
 
     return [
-      '#theme' => 'webform_quiz_correct_answer_description',
+      '#theme' => 'webform_quiz_answer_description',
       '#correct_answer' => [],
-      '#correct_answer_description' => NULL,
+      '#sai_correct_answer_description' => NULL,
+      '#sai_incorrect_answer_description' => NULL,
       '#triggering_element' => [],
       '#pre_render' => [
-        [$class, 'preRenderWebformQuizCorrectAnswerDescription'],
+        [$class, 'preRenderWebformQuizAnswerDescription'],
       ],
     ];
   }
@@ -38,7 +39,7 @@ class WebformQuizCorrectAnswerDescription extends RenderElement {
    * @return array
    *   The modified element with webform submission information.
    */
-  public static function preRenderWebformQuizCorrectAnswerDescription(array $element) {
+  public static function preRenderWebformQuizAnswerDescription(array $element) {
     $triggering_element = $element['#triggering_element'];
     $correct_answers = $element['#correct_answer'];
     $user_selected_value = $triggering_element['#default_value'];

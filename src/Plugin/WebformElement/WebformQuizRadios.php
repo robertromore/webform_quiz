@@ -5,6 +5,7 @@ namespace Drupal\webform_quiz\Plugin\WebformElement;
 use Drupal;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Plugin\WebformElement\Radios;
 use Drupal\webform\WebformSubmissionInterface;
@@ -27,10 +28,13 @@ class WebformQuizRadios extends Radios {
    */
   public function getDefaultProperties() {
     return [
-        // Form display.
-        'correct_answer' => [],
-        'correct_answer_description' => '',
-      ] + parent::getDefaultProperties();
+      // Form display.
+      'correct_answer' => [],
+      'sai_enable' => FALSE,
+      'sai_allow_change' => FALSE,
+      'sai_correct_answer_description' => NULL,
+      'sai_incorrect_answer_description' => NULL,
+    ] + parent::getDefaultProperties();
   }
 
   /**
@@ -48,22 +52,62 @@ class WebformQuizRadios extends Radios {
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form = parent::buildConfigurationForm($form, $form_state);
-    $storage = $form_state->getStorage();
-    $element_properties = $storage['element_properties'];
+    $element_properties = $form_state->get('element_properties');
 
-    // Modify the existing element description to distinguish it from the
-    // correct answer description.
-    $form['element_description']['description']['#title'] = $this->t('Element Description');
+    $form['correct_answer_options'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Correct Answer Options'),
+      '#weight' => 100,
+    ];
 
-    // Add a WYSIWYG for the correct answer description.
-    $form['element_description']['correct_answer_description'] = [
+    $form['correct_answer_options']['webform_quiz_number_of_points'] = [
+      '#type' => 'number',
+      '#title' => t('Number of points'),
+      '#description' => t('Enter the number of points answering this question correctly is worth.'),
+      '#default_value' => isset($element_properties['webform_quiz_number_of_points']) ? $element_properties['webform_quiz_number_of_points'] : 1,
+    ];
+
+    $form['correct_answer_options']['sai_container'] = $this->getFormInlineContainer();
+
+    $form['correct_answer_options']['sai_container']['sai_enable'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Show answer immediately?'),
+      '#description' => $this->t('If checked, the answer will be displayed immediately after the user enters an answer.'),
+      '#default_value' => isset($element_properties['sai_enable']) ? $element_properties['sai_enable'] : FALSE,
+    ];
+
+    $form['correct_answer_options']['sai_container']['sai_correct_answer_description'] = [
       '#type' => 'webform_html_editor',
       '#title' => $this->t('Correct Answer Description'),
-      '#description' => $this->t('A description of why the correct answer is correct.'),
-      '#default_value' => isset($element_properties['correct_answer_description']) ? $element_properties['correct_answer_description'] : '',
-      '#weight' => 0,
+      '#description' => $this->t('A description of why the answer is correct.'),
+      '#default_value' => isset($element_properties['sai_correct_answer_description']) ? $element_properties['sai_correct_answer_description'] : '',
+      '#states' => [
+        'visible' => [
+          ':input[name="sai_enable"]' => ['checked' => TRUE],
+        ],
+      ],
     ];
+
+    $form['correct_answer_options']['sai_container']['sai_incorrect_answer_description'] = [
+      '#type' => 'webform_html_editor',
+      '#title' => $this->t('Incorrect Answer Description'),
+      '#description' => $this->t('A description of why the answer is incorrect.'),
+      '#default_value' => isset($element_properties['sai_incorrect_answer_description']) ? $element_properties['sai_incorrect_answer_description'] : '',
+      '#states' => [
+        'visible' => [
+          ':input[name="sai_enable"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
+    $form['correct_answer_options']['sai_allow_change'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Allow user to change answer?'),
+      '#description' => $this->t('If checked, the user will be able to update their answer after being shown the correct answer.'),
+      '#default_value' => isset($element_properties['sai_allow_change']) ? $element_properties['sai_allow_change'] : FALSE,
+    ];
+
+    $form = parent::buildConfigurationForm($form, $form_state);
 
     return $form;
   }
@@ -76,7 +120,7 @@ class WebformQuizRadios extends Radios {
 
     // Make sure no blank options get submitted. If they are, just remove them.
     $values = $form_state->getValues();
-    foreach ($values['options'] as $key => $value) {
+    foreach ($values['options'] as $value) {
       if (empty($value)) {
         unset($values['options'][$value]);
       }
@@ -92,15 +136,31 @@ class WebformQuizRadios extends Radios {
     // appearing in the webform.
     $element['#type'] = 'radios';
 
-    $correct_answer_description_wrapper = [
+    $answer_description_wrapper = [
       '#type' => 'container',
-      '#attributes' => ['id' => 'correct-answer-description-wrapper'],
+      '#attributes' => ['id' => 'answer-description-wrapper'],
     ];
-    $element['#suffix'] = Drupal::service('renderer')->render($correct_answer_description_wrapper);
 
-    if (!empty($element['#correct_answer_description'])) {
+    $element['#suffix'] = render($answer_description_wrapper);
+
+    $sai_enable = isset($element['#sai_enable']) && !empty($element['#sai_enable']);
+    if ($sai_enable) {
+      $sai_allow_change = isset($element['#sai_allow_change']) && !empty($element['#sai_allow_change']);
+      $data = $webform_submission->getElementData($element['#webform_key']);
+      $default_value_set = isset($element['#default_value']) && !empty($element['#default_value']);
+      $value_set = isset($element['#value']) && !empty($element['#value']);
+
+      if ((!empty($data) || $default_value_set || $value_set) && !$sai_allow_change) {
+        $answer_description = self::getAnswerDescriptionElement($element, [
+          '#sai_enable' => $sai_enable,
+          '#triggering_element' => $element,
+        ]);
+        $element['#attributes']['disabled'] = 'disabled';
+        $element['#suffix'] = render($answer_description);
+      }
+
       $element['#ajax'] = [
-        'callback' => 'Drupal\webform_quiz\Plugin\WebformElement\WebformQuizRadios::ajaxShowCorrectAnswerDescription',
+        'callback' => [get_class($this), 'ajaxShowAnswerDescription'],
         'event' => 'change',
         'progress' => [
           'type' => 'throbber',
@@ -113,7 +173,7 @@ class WebformQuizRadios extends Radios {
   }
 
   /**
-   * Ajax handler to help show the correct description when user clicks an
+   * Ajax handler to help show the answer description when user clicks an
    * option.
    *
    * @param $form
@@ -121,7 +181,7 @@ class WebformQuizRadios extends Radios {
    *
    * @return \Drupal\Core\Ajax\AjaxResponse
    */
-  public static function ajaxShowCorrectAnswerDescription(&$form, FormStateInterface $form_state) {
+  public static function ajaxShowAnswerDescription(&$form, FormStateInterface $form_state) {
     $ajax_response = new AjaxResponse();
 
     $triggering_element = $form_state->getTriggeringElement();
@@ -131,23 +191,55 @@ class WebformQuizRadios extends Radios {
     $form_obj = $form_state->getFormObject();
     $webform = $form_obj->getWebform();
     $element = $webform->getElement($element_key);
-    $description = isset($element['#correct_answer_description']) ? $element['#correct_answer_description'] : '';
+    $sai_enable = isset($element['#sai_enable']) && !empty($element['#sai_enable']);
+    $sai_allow_change = !isset($element['#sai_allow_change']) || isset($element['#sai_allow_change']) && !empty($element['#sai_allow_change']);
+    $build = self::getAnswerDescriptionElement($element, ['#sai_enable' => $sai_enable, '#triggering_element' => $triggering_element], FALSE);
+    $ajax_response->addCommand(new HtmlCommand('#answer-description-wrapper', $build));
 
-    $build['#type'] = 'container';
-    $build['#attributes']['id'] = 'correct-answer-description-wrapper';
-    $build['description'] = [
-      '#type' => 'webform_quiz_correct_answer_description',
-      '#correct_answer' => $element['#correct_answer'],
-      '#correct_answer_description' => $description,
-      '#triggering_element' => $triggering_element,
-    ];
+    $webform_id = $element['#webform_id'];
+    list($form_id, $input_name) = explode('--', $webform_id);
+    $form_id = 'webform-submission-' . str_replace('_', '-', $form_id) . '-add-form';
+    $selector = sprintf('.%s input[name="%s"]', $form_id, $input_name);
 
-    $ajax_response->addCommand(new HtmlCommand('#correct-answer-description-wrapper', $build));
+    if (!$sai_allow_change) {
+      $ajax_response->addCommand(new InvokeCommand($selector, 'prop', ['disabled', 'true']));
+    }
+
+    $correct_answers = $element['#correct_answer'];
+    $user_selected_value = $triggering_element['#default_value'];
+    $is_user_correct = in_array($user_selected_value, $correct_answers);
+    $class = 'incorrect';
+    if ($is_user_correct) {
+      $class = 'correct';
+    }
+
+    $ajax_response->addCommand(new InvokeCommand($selector . '[value="' . $user_selected_value . '"]', 'addClass', [$class]));
 
     // Allow other modules to add ajax commands.
-    Drupal::moduleHandler()->invokeAll('webform_quiz_correct_answer_shown', [$ajax_response, $element, $form_state]);
+    Drupal::moduleHandler()->invokeAll('webform_quiz_answer_shown', [$ajax_response, $element, $form_state]);
 
     return $ajax_response;
+  }
+
+  public static function getAnswerDescriptionElement($element, array $props = [], $include_container = TRUE) {
+    $correct_answer_description = isset($element['#sai_correct_answer_description']) ? $element['#sai_correct_answer_description'] : '';
+    $incorrect_answer_description = isset($element['#sai_incorrect_answer_description']) ? $element['#sai_incorrect_answer_description'] : '';
+
+    $build['#type'] = 'container';
+    $build['#attributes']['id'] = 'answer-description-wrapper';
+    $build['description'] = [
+      '#type' => 'webform_quiz_answer_description',
+      '#correct_answer' => $element['#correct_answer'],
+      '#sai_correct_answer_description' => $correct_answer_description,
+      '#sai_incorrect_answer_description' => $incorrect_answer_description,
+    ] + $props;
+
+    if ($include_container) {
+      return $build;
+    }
+    else {
+      return $build['description'];
+    }
   }
 
 }

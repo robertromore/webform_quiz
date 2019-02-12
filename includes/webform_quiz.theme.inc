@@ -10,9 +10,11 @@
  */
 function webform_quiz_theme($existing, $type, $theme, $path) {
   $info = [
-    'webform_quiz_correct_answer_description' => [
+    'webform_quiz_answer_description' => [
       'variables' => [
-        'correct_answer_description' => NULL,
+        'sai_enable' => NULL,
+        'sai_correct_answer_description' => NULL,
+        'sai_incorrect_answer_description' => NULL,
         'is_user_correct' => NULL,
       ],
     ],

@@ -46,10 +46,17 @@ class WebformQuizElementConfigSubmit extends PluginBase implements WebformQuizSu
       $user_input = $form_state->getUserInput();
       $items = $user_input['properties']['options']['custom']['options']['items'];
       $correct_answers = [];
+
       foreach ($items as $item) {
         if (!empty($item['is_correct_answer'])) {
           $correct_answers[$item['value']] = $item['value'];
         }
+      }
+
+      // @todo Use a better check to ensure this element can use the
+      // webform_quiz properties.
+      if (empty($correct_answers)) {
+        return;
       }
 
       if (empty($key)) {
@@ -58,12 +65,20 @@ class WebformQuizElementConfigSubmit extends PluginBase implements WebformQuizSu
         throw new Exception($message);
       }
 
-      // Save the correct answer description.
+      // Save the answer descriptions.
       $values = $form_state->getValues();
-      $correct_answer_description = $values['correct_answer_description'];
+      $sai_enable = $values['sai_enable'];
+      $sai_allow_change = $values['sai_allow_change'];
+      $correct_answer_description = $values['sai_correct_answer_description'];
+      $incorrect_answer_description = $values['sai_incorrect_answer_description'];
+      $point_value = $values['webform_quiz_number_of_points'];
 
       $properties['#correct_answer'] = $correct_answers;
-      $properties['#correct_answer_description'] = $correct_answer_description;
+      $properties['#sai_enable'] = $sai_enable;
+      $properties['#sai_allow_change'] = $sai_allow_change;
+      $properties['#sai_correct_answer_description'] = $correct_answer_description;
+      $properties['#sai_incorrect_answer_description'] = $incorrect_answer_description;
+      $properties['#webform_quiz_number_of_points'] = $point_value;
 
       $webform->setElementProperties($key, $properties, $parent_key);
 

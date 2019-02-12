@@ -13,8 +13,9 @@
 <div class="webform-quiz-correct-answer-description">
   {% if is_user_correct %}
     <div class="result correct">Correct</div>
+    {{ sai_correct_answer_description|raw }}
   {% else %}
     <div class="result wrong">Wrong</div>
+    {{ sai_incorrect_answer_description|raw }}
   {% endif %}
-  {{ correct_answer_description|raw }}
 </div>

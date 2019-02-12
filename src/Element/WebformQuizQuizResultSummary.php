@@ -41,6 +41,8 @@ class WebformQuizQuizResultSummary extends RenderElement {
    *   The modified element with webform submission information.
    */
   public static function preRenderWebformQuizQuizResultSummary(array $element) {
+    $element['#attributes'] = [];
+
     /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
     $webform_submission = $element['#webform_submission'];
 
@@ -51,7 +53,7 @@ class WebformQuizQuizResultSummary extends RenderElement {
       '#title' => t('Quiz Results'),
     ];
 
-    $quiz_results =  WebformQuizResults::create($data);
+    $quiz_results = WebformQuizResults::create($data);
 
     $element['#quiz_results'] = $quiz_results->toArray();
 
