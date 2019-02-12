@@ -1,0 +1,30 @@
+<?php
+
+use Drupal\webform_quiz_views\WebformQuizViewsSubmissionViewsData;
+
+/**
+ * Implements hook_entity_type_alter().
+ *
+ * Use custom classes for webform and webform submissions so we can
+ * modify the form/view builder to be a quiz.
+ */
+function webform_quiz_views_entity_type_alter(array &$entity_types) {
+  if (isset($entity_types['webform_submission'])) {
+    $entity_types['webform_submission']->setHandlerClass('views_data', WebformQuizViewsSubmissionViewsData::class);
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function webform_quiz_views_module_implements_alter(&$implementations, $hook) {
+  // We need to run hook_local_tasks_alter() after views' implementation of the
+  // same hook.
+  switch ($hook) {
+    case 'entity_type_alter':
+      $group = $implementations['webform_quiz_views'];
+      unset($implementations['webform_quiz_views']);
+      $implementations['webform_quiz_views'] = $group;
+      break;
+  }
+}

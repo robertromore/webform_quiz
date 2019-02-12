@@ -1,0 +1,9 @@
+name: 'Webform Quiz Views'
+type: module
+description: 'Provide views integration with Webform Quiz.'
+core: 8.x
+package: 'Webform'
+dependencies:
+  - 'drupal:webform'
+  - 'drupal:webform_quiz'
+  - 'drupal:webform_views'
