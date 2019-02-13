@@ -7,6 +7,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\webform\Entity\Webform as WebformEntity;
 use Drupal\webform\Plugin\WebformElement\Radios;
 use Drupal\webform\WebformSubmissionInterface;
 
@@ -143,8 +144,15 @@ class WebformQuizRadios extends Radios {
 
     $element['#suffix'] = render($answer_description_wrapper);
 
+    $using_ajax = FALSE;
+    list($form_id, $input_name) = explode('--', $element['#webform_id']);
+    $webform = WebformEntity::load($form_id);
+    if ($webform && $webform->getSetting('ajax', TRUE)) {
+      $using_ajax = TRUE;
+    }
+
     $sai_enable = isset($element['#sai_enable']) && !empty($element['#sai_enable']);
-    if ($sai_enable) {
+    if ($sai_enable && $using_ajax) {
       $sai_allow_change = isset($element['#sai_allow_change']) && !empty($element['#sai_allow_change']);
       $data = $webform_submission->getElementData($element['#webform_key']);
       $default_value_set = isset($element['#default_value']) && !empty($element['#default_value']);
