@@ -20,6 +20,16 @@ class WebformQuizCheckboxes extends WebformQuizRadios {
   /**
    * {@inheritdoc}
    */
+  public function getDefaultProperties() {
+    return [
+      'multiple' => TRUE,
+      'multiple_error' => '',
+    ] + parent::getDefaultProperties();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
     // This addresses an issue where the webform_quiz_checkboxes element was not
     // appearing in the webform.
