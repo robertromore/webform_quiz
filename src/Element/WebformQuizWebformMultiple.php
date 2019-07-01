@@ -35,9 +35,8 @@ class WebformQuizWebformMultiple extends WebformMultiple {
     $webform = $entity_manager->getSourceEntity();
     $element_config = $webform->getElement($element['#parent_webform_element_key']);
 
-
-    if (isset($row["value"]["#default_value"]) && isset($element_config['#correct_answer'])) {
-      $row['is_correct_answer']['#default_value'] = in_array($row["value"]["#default_value"], $element_config['#correct_answer']);
+    if (isset($row['option_value']['value']['#default_value']) && isset($element_config['#correct_answer'])) {
+      $row['is_correct_answer']['#default_value'] = in_array($row['option_value']['value']['#default_value'], $element_config['#correct_answer']);
     }
 
     return $row;
