@@ -11,7 +11,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  */
 class WebformQuizSubmitHandlerManager extends DefaultPluginManager {
 
-
   /**
    * Constructs a new WebformQuizSubmitHandlerManager object.
    *

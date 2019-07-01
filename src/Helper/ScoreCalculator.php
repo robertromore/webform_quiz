@@ -34,25 +34,25 @@ class ScoreCalculator {
   protected function calculate() {
     $webform_submission = $this->webformSubmission;
 
-    $number_of_points_received = 0;
-    $number_of_available_points = 0;
+    $points_received = 0;
+    $available_points = 0;
 
-    foreach ($webform_submission->getWebform()->getElementsInitializedAndFlattened() as $key => $element) {
+    foreach ($webform_submission->getWebform()->getElementsInitializedAndFlattened() as $element) {
       if (isset($element['#correct_answer'])) {
-        $number_of_available_points += $element['#webform_quiz_number_of_points'];
+        $available_points += $element['#webform_quiz_number_of_points'];
         $submission_data = $webform_submission->getElementData($element['#webform_key']);
 
         if (is_string($submission_data) && in_array($submission_data, $element['#correct_answer'])) {
           // This indicates that the user answered the question correctly.
-          $number_of_points_received += $element['#webform_quiz_number_of_points'];
+          $points_received += $element['#webform_quiz_number_of_points'];
         }
       }
     }
 
     $this->results = WebformQuizResults::create([
-      'webform_quiz_number_of_points_received' => $number_of_points_received,
-      'webform_quiz_total_number_of_points' => $number_of_available_points,
-      'webform_quiz_score' => ($number_of_points_received / $number_of_available_points) * 100
+      'webform_quiz_number_of_points_received' => $points_received,
+      'webform_quiz_total_number_of_points' => $available_points,
+      'webform_quiz_score' => ($points_received / $available_points) * 100
     ]);
 
   }

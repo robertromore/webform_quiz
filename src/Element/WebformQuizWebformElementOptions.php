@@ -15,7 +15,6 @@ use Drupal\webform\Element\WebformElementOptions;
  */
 class WebformQuizWebformElementOptions extends WebformElementOptions {
 
-
   /**
    * Processes a webform element options element.
    */

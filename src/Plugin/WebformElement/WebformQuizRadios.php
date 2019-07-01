@@ -53,6 +53,8 @@ class WebformQuizRadios extends Radios {
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $form = parent::buildConfigurationForm($form, $form_state);
+
     $element_properties = $form_state->get('element_properties');
 
     $form['correct_answer_options'] = [
@@ -108,8 +110,6 @@ class WebformQuizRadios extends Radios {
       '#default_value' => isset($element_properties['sai_allow_change']) ? $element_properties['sai_allow_change'] : FALSE,
     ];
 
-    $form = parent::buildConfigurationForm($form, $form_state);
-
     return $form;
   }
 
@@ -145,7 +145,7 @@ class WebformQuizRadios extends Radios {
     $element['#suffix'] = render($answer_description_wrapper);
 
     $using_ajax = FALSE;
-    list($form_id, $input_name) = explode('--', $element['#webform_id']);
+    list($form_id, ) = explode('--', $element['#webform_id']);
     $webform = WebformEntity::load($form_id);
     if ($webform && $webform->getSetting('ajax', TRUE)) {
       $using_ajax = TRUE;

@@ -10,12 +10,12 @@ class WebformQuizResults {
   /**
    * @var integer
    */
-  protected $numberOfPointsReceived;
+  protected $pointsReceived;
 
   /**
    * @var integer
    */
-  protected $totalNumberOfPoints;
+  protected $totalPoints;
 
   /**
    * @var double
@@ -25,13 +25,13 @@ class WebformQuizResults {
   /**
    * QuizResults constructor.
    *
-   * @param int $numberOfPointsReceived
-   * @param int $totalNumberOfPoints
+   * @param int $pointsReceived
+   * @param int $totalPoints
    * @param float $score
    */
-  public function __construct($numberOfPointsReceived, $totalNumberOfPoints, $score) {
-    $this->numberOfPointsReceived = $numberOfPointsReceived;
-    $this->totalNumberOfPoints = $totalNumberOfPoints;
+  public function __construct($pointsReceived, $totalPoints, $score) {
+    $this->numberOfPointsReceived = $pointsReceived;
+    $this->totalNumberOfPoints = $totalPoints;
     $this->score = $score;
   }
 
