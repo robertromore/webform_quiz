@@ -133,9 +133,7 @@ class WebformQuizRadios extends Radios {
    * {@inheritdoc}
    */
   public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
-    // This addresses an issue where the webform_quiz_radios element was not
-    // appearing in the webform.
-    $element['#type'] = 'radios';
+    parent::prepare($element, $webform_submission);
 
     $answer_description_wrapper = [
       '#type' => 'container',
@@ -176,8 +174,6 @@ class WebformQuizRadios extends Radios {
         ],
       ];
     }
-
-    parent::prepare($element, $webform_submission);
   }
 
   /**
