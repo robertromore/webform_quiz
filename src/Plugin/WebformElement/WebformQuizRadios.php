@@ -203,10 +203,16 @@ class WebformQuizRadios extends Radios {
     $webform_id = $element['#webform_id'];
     list($form_id, $input_name) = explode('--', $webform_id);
     $form_id = 'webform-submission-' . str_replace('_', '-', $form_id) . '-add-form';
-    $selector = sprintf('.%s input[name="%s"]', $form_id, $input_name);
+    $parent_selector = sprintf('.%s .form-item-%s', $form_id, str_replace('_', '-', $input_name));
+    $selector = sprintf('.%s input[name=%s]', $form_id, $input_name);
 
     if (!$sai_allow_change) {
       $ajax_response->addCommand(new InvokeCommand($selector, 'prop', ['disabled', 'true']));
+    }
+
+    foreach (['not-selected', 'disabled'] as $className) {
+      $ajax_response->addCommand(new InvokeCommand($parent_selector, 'addClass', [$className]));
+      $ajax_response->addCommand(new InvokeCommand($selector, 'addClass', [$className]));
     }
 
     $correct_answers = $element['#correct_answer'];
@@ -217,7 +223,10 @@ class WebformQuizRadios extends Radios {
       $class = 'correct';
     }
 
-    $ajax_response->addCommand(new InvokeCommand($selector . '[value="' . $user_selected_value . '"]', 'addClass', [$class]));
+    $ajax_response->addCommand(new InvokeCommand($parent_selector . ":has([value=${user_selected_value}])", 'removeClass', ['not-selected']));
+    $ajax_response->addCommand(new InvokeCommand($parent_selector . ":has([value=${user_selected_value}])", 'addClass', [$class]));
+    $ajax_response->addCommand(new InvokeCommand("${selector}[value=${user_selected_value}]", 'removeClass', ['not-selected']));
+    $ajax_response->addCommand(new InvokeCommand("${selector}[value=${user_selected_value}]", 'addClass', [$class]));
 
     // Allow other modules to add ajax commands.
     Drupal::moduleHandler()->invokeAll('webform_quiz_answer_shown', [$ajax_response, $element, $form_state]);
