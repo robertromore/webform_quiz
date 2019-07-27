@@ -10,9 +10,9 @@ use ReflectionMethod;
 /**
  * Webform quiz score.
  *
- * @ViewsField("webform_quiz_score")
+ * @ViewsField("webform_quiz_score_field")
  */
-class WebformQuizScore extends WebformSubmissionFieldNumeric {
+class WebformQuizScoreField extends WebformSubmissionFieldNumeric {
 
   /**
    * {@inheritdoc}

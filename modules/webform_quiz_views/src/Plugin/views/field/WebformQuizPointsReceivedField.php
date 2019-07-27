@@ -5,11 +5,11 @@ namespace Drupal\webform_quiz_views\Plugin\views\field;
 use Drupal\views\ResultRow;
 
 /**
- * Webform quiz total points.
+ * Webform quiz points received.
  *
- * @ViewsField("webform_quiz_total_points")
+ * @ViewsField("webform_quiz_points_received_field")
  */
-class WebformQuizTotalPoints extends WebformQuizScore {
+class WebformQuizPointsReceivedField extends WebformQuizScoreField {
 
   /**
    * {@inheritdoc}
@@ -20,8 +20,7 @@ class WebformQuizTotalPoints extends WebformQuizScore {
 
     if ($webform_submission && $webform_submission->access('view')) {
       $data = $webform_submission->getData();
-
-      return $data['webform_quiz_total_number_of_points'];
+      return $data['webform_quiz_points_received'];
     }
 
     return [];

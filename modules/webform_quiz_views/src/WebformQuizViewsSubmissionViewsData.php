@@ -21,23 +21,26 @@ class WebformQuizViewsSubmissionViewsData extends WebformSubmissionViewsData {
       'title' => $this->t("Webform Quiz: User's Score"),
       'help' => $this->t("The user's total score."),
       'field' => [
-        'id' => 'webform_quiz_score',
+        'id' => 'webform_quiz_score_field',
+        'real field' => $this->entityType->getKey('id'),
       ],
     ];
 
     $data[$base_table]['webform_quiz_total_points'] = [
-      'title' => $this->t("Webform Quiz: Total Number of Points"),
-      'help' => $this->t("The total number of points for this quiz."),
+      'title' => $this->t('Webform Quiz: Total Number of Points'),
+      'help' => $this->t('The total number of points for this quiz.'),
       'field' => [
-        'id' => 'webform_quiz_total_points',
+        'id' => 'webform_quiz_total_points_field',
+        'real field' => $this->entityType->getKey('id'),
       ],
     ];
 
     $data[$base_table]['webform_quiz_points_received'] = [
-      'title' => $this->t("Webform Quiz: Number of Points Received"),
-      'help' => $this->t("The total number of points the user received."),
+      'title' => $this->t('Webform Quiz: Number of Points Received'),
+      'help' => $this->t('The total number of points the user received.'),
       'field' => [
-        'id' => 'webform_quiz_points_received',
+        'id' => 'webform_quiz_points_received_field',
+        'real field' => $this->entityType->getKey('id'),
       ],
     ];
 
