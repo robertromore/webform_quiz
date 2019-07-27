@@ -50,8 +50,8 @@ class ScoreCalculator {
     }
 
     $this->results = WebformQuizResults::create([
-      'webform_quiz_number_of_points_received' => $points_received,
-      'webform_quiz_total_number_of_points' => $available_points,
+      'webform_quiz_points_received' => $points_received,
+      'webform_quiz_total_points' => $available_points,
       'webform_quiz_score' => ($points_received / $available_points) * 100
     ]);
 

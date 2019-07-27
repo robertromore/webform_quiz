@@ -37,8 +37,8 @@ class WebformQuizResults {
 
   public static function create($data) {
     return new static(
-      $data['webform_quiz_number_of_points_received'],
-      $data['webform_quiz_total_number_of_points'],
+      $data['webform_quiz_points_received'],
+      $data['webform_quiz_total_points'],
       $data['webform_quiz_score']
     );
   }
@@ -66,8 +66,8 @@ class WebformQuizResults {
 
   public function toArray() {
     return [
-      'webform_quiz_number_of_points_received' => $this->getNumberOfPointsReceived(),
-      'webform_quiz_total_number_of_points' => $this->getTotalNumberOfPoints(),
+      'webform_quiz_points_received' => $this->getNumberOfPointsReceived(),
+      'webform_quiz_total_points' => $this->getTotalNumberOfPoints(),
       'webform_quiz_score' => $this->getScore()
     ];
   }

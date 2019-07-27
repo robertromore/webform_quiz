@@ -76,8 +76,8 @@ function webform_quiz_webform_submission_presave(WebformSubmission $webform_subm
   $data = $webform_submission->getData();
 
   // Save the quiz results.
-  $data['webform_quiz_number_of_points_received'] = $quiz_results->getNumberOfPointsReceived();
-  $data['webform_quiz_total_number_of_points'] = $quiz_results->getTotalNumberOfPoints();
+  $data['webform_quiz_points_received'] = $quiz_results->getNumberOfPointsReceived();
+  $data['webform_quiz_total_points'] = $quiz_results->getTotalNumberOfPoints();
   $data['webform_quiz_score'] = $quiz_results->getScore();
 
   $webform_submission->setData($data);
