@@ -68,6 +68,7 @@ class WebformQuizElementConfigSubmit extends PluginBase implements WebformQuizSu
       // Save the answer descriptions.
       $values = $form_state->getValues();
       $sai_enable = $values['sai_enable'];
+      $sai_position = $values['sai_position'];
       $sai_allow_change = $values['sai_allow_change'];
       $correct_answer_description = $values['sai_correct_answer_description'];
       $incorrect_answer_description = $values['sai_incorrect_answer_description'];
@@ -75,6 +76,7 @@ class WebformQuizElementConfigSubmit extends PluginBase implements WebformQuizSu
 
       $properties['#correct_answer'] = $correct_answers;
       $properties['#sai_enable'] = $sai_enable;
+      $properties['#sai_position'] = $sai_position;
       $properties['#sai_allow_change'] = $sai_allow_change;
       $properties['#sai_correct_answer_description'] = $correct_answer_description;
       $properties['#sai_incorrect_answer_description'] = $incorrect_answer_description;

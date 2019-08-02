@@ -10,6 +10,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Entity\Webform as WebformEntity;
 use Drupal\webform\Plugin\WebformElement\Radios;
 use Drupal\webform\WebformSubmissionInterface;
+use Drupal\Core\Ajax\AfterCommand;
 
 /**
  * Provides a 'webform_quiz_radios' element.
@@ -24,6 +25,10 @@ use Drupal\webform\WebformSubmissionInterface;
  */
 class WebformQuizRadios extends Radios {
 
+  const SAI_POSITION_AFTER_QUESTION = 0;
+
+  const SAI_POSITION_AFTER_ALL_QUESTIONS = 1;
+
   /**
    * {@inheritdoc}
    */
@@ -32,6 +37,7 @@ class WebformQuizRadios extends Radios {
       // Form display.
       'correct_answer' => [],
       'sai_enable' => FALSE,
+      'sai_position' => self::SAI_POSITION_AFTER_ALL_QUESTIONS,
       'sai_allow_change' => FALSE,
       'sai_correct_answer_description' => NULL,
       'sai_incorrect_answer_description' => NULL,
@@ -77,6 +83,22 @@ class WebformQuizRadios extends Radios {
       '#title' => $this->t('Show answer immediately?'),
       '#description' => $this->t('If checked, the answer will be displayed immediately after the user enters an answer.'),
       '#default_value' => isset($element_properties['sai_enable']) ? $element_properties['sai_enable'] : FALSE,
+    ];
+
+    $form['correct_answer_options']['sai_container']['sai_position'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Answer Position'),
+      '#description' => $this->t('Select where you want the answer information to be displayed.'),
+      '#options' => [
+        self::SAI_POSITION_AFTER_ALL_QUESTIONS => $this->t('After all questions.'),
+        self::SAI_POSITION_AFTER_QUESTION => $this->t('Immediately after the question.'),
+      ],
+      '#states' => [
+        'visible' => [
+          ':input[name="sai_enable"]' => ['checked' => TRUE],
+        ],
+      ],
+      '#default_value' => isset($element_properties['sai_position']) ? $element_properties['sai_position'] : self::SAI_POSITION_AFTER_ALL_QUESTIONS,
     ];
 
     $form['correct_answer_options']['sai_container']['sai_correct_answer_description'] = [
@@ -140,7 +162,9 @@ class WebformQuizRadios extends Radios {
       '#attributes' => ['id' => 'answer-description-wrapper'],
     ];
 
-    $element['#suffix'] = render($answer_description_wrapper);
+    if (!isset($element['#sai_position']) || $element['#sai_position'] == self::SAI_POSITION_AFTER_ALL_QUESTIONS) {
+      $element['#suffix'] = render($answer_description_wrapper);
+    }
 
     $using_ajax = FALSE;
     list($form_id, ) = explode('--', $element['#webform_id']);
@@ -162,7 +186,9 @@ class WebformQuizRadios extends Radios {
           '#triggering_element' => $element,
         ]);
         $element['#attributes']['disabled'] = 'disabled';
-        $element['#suffix'] = render($answer_description);
+        if (!isset($element['#sai_position']) || $element['#sai_position'] == self::SAI_POSITION_AFTER_ALL_QUESTIONS) {
+          $element['#suffix'] = render($answer_description);
+        }
       }
 
       $element['#ajax'] = [
@@ -198,8 +224,6 @@ class WebformQuizRadios extends Radios {
     $sai_enable = isset($element['#sai_enable']) && !empty($element['#sai_enable']);
     $sai_allow_change = !isset($element['#sai_allow_change']) || isset($element['#sai_allow_change']) && !empty($element['#sai_allow_change']);
     $build = self::getAnswerDescriptionElement($element, ['#sai_enable' => $sai_enable, '#triggering_element' => $triggering_element], FALSE);
-    $ajax_response->addCommand(new HtmlCommand('#answer-description-wrapper', $build));
-
     $webform_id = $element['#webform_id'];
     list($form_id, $input_name) = explode('--', $webform_id);
     $form_id = 'webform-submission-' . str_replace('_', '-', $form_id) . '-add-form';
@@ -221,6 +245,13 @@ class WebformQuizRadios extends Radios {
     $class = 'incorrect';
     if ($is_user_correct) {
       $class = 'correct';
+    }
+
+    if (!isset($element['#sai_position']) || $element['#sai_position'] == self::SAI_POSITION_AFTER_ALL_QUESTIONS) {
+      $ajax_response->addCommand(new HtmlCommand('#answer-description-wrapper', $build));
+    }
+    else {
+      $ajax_response->addCommand(new AfterCommand($parent_selector . ":has([value=${user_selected_value}])", $build));
     }
 
     $ajax_response->addCommand(new InvokeCommand($parent_selector . ":has([value=${user_selected_value}])", 'removeClass', ['not-selected']));
