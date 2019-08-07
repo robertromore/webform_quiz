@@ -69,13 +69,6 @@ class WebformQuizRadios extends Radios {
       '#weight' => 100,
     ];
 
-    $form['correct_answer_options']['webform_quiz_number_of_points'] = [
-      '#type' => 'number',
-      '#title' => t('Number of points'),
-      '#description' => t('Enter the number of points answering this question correctly is worth.'),
-      '#default_value' => isset($element_properties['webform_quiz_number_of_points']) ? $element_properties['webform_quiz_number_of_points'] : 1,
-    ];
-
     $form['correct_answer_options']['sai_container'] = $this->getFormInlineContainer();
 
     $form['correct_answer_options']['sai_container']['sai_enable'] = [
