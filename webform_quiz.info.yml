@@ -1,7 +1,7 @@
 name: 'Webform Quiz'
 type: module
 description: 'Build awesome quizzes using the webform module.'
-core: 8.x
+core_version_requirement: ^8.9 || ^9
 package: 'Webform'
 dependencies:
   - 'webform:webform'
