@@ -1,7 +1,7 @@
 name: 'Webform Quiz Stats'
 type: module
 description: 'Provide percentages for users that responded to particular answers.'
-core: 8.x
+core_version_requirement: ^8.9 || ^9
 package: 'Webform'
 dependencies:
   - 'drupal:webform'
